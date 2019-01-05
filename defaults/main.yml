@@ -1,3 +1,6 @@
 ---
-maxmind_path: /usr/share/GeoIP
+
+maxmind_path: "/usr/share/GeoIP"
+maxmind_url: "http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz"
+
 ...
