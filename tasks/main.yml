@@ -1,0 +1,56 @@
+---
+
+- name: Install package dependencies
+  apt:
+    name: "{{ packages }}"
+    state: latest
+    dpkg_options: 'force-confnew,force-confdef'
+    autoclean: yes
+    autoremove: yes
+    update_cache: yes
+    cache_valid_time: 3600
+  vars:
+    packages:
+    - gzip
+    - wget
+    - geoip-bin
+
+- name: create geolitecity directory
+  file:
+    path: "{{ maxmind_path }}"
+    state: directory
+    mode: 0644
+
+- name: Download GeoLiteCity
+  get_url:
+    url: "{{ maxmind_url }}"
+    dest: "{{ maxmind_path }}/GeoLiteCity.dat.gz"
+    mode: 0755
+
+- name: Unzipping .dat file
+  shell: "gzip -d {{ maxmind_path }}/GeoLiteCity.dat.gz"
+
+- name: Rename .dat file
+  shell: "mv {{ maxmind_path }}/GeoLiteCity.dat {{ maxmind_path }}/GeoIPCity.dat"
+
+- name: add cron script
+  template:
+    src: update_geolitecity.sh.j2
+    dest: /etc/update_geolitecity.sh
+    owner: root
+    group: root
+    mode: 0700
+
+- name: create renew cron job
+  cron:
+    name: update_geolitecity
+    month: "*"
+    day: "1"
+    hour: "2"
+    minute: "0"
+    user: root
+    job: "/etc/update_geolitecity.sh"
+    cron_file: UpdateGeoLiteCityTask
+    state: present
+
+...

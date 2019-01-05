@@ -1,0 +1,12 @@
+#!/bin/bash
+# Script for monthly updates of the Maxmind GeoLiteCity Database
+#
+### Settings ##
+MAXMINDDIR="{{ maxmind_path }}" ## GeoLiteCity Target Directory
+MAXMINDURL="{{ maxmind_url }}"  ## GeoLiteCity Download URL
+
+wget $MAXMINDURL -O $MAXMINDDIR/GeoLiteCity.dat.gz
+
+gzip -d $MAXMINDDIR/GeoLiteCity.dat.gz
+
+mv $MAXMINDDIR/GeoLiteCity.dat $MAXMINDDIR/GeoIPCity.dat
